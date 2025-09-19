@@ -1,14 +1,14 @@
-# LLM Weather MCP Project
+# Nimbus Weather MCP Assistant
 
-A demonstration project that shows how to use **Model Context Protocol (MCP)** to create an LLM-powered weather assistant. This project consists of an MCP server that provides weather data and an LLM client that uses this data to provide intelligent weather insights.
+An interactive, MCP-powered weather assistant in Python. It pairs a Model Context Protocol (MCP) server that fetches OpenWeather data with a client that analyzes and presents current conditions or a 5‑day forecast. The CLI loops so you can query multiple locations without restarting.
 
 ## 🌟 Features
 
-- **MCP Weather Server**: Provides current weather and forecast data through MCP protocol
-- **LLM Client**: Intelligent weather assistant that analyzes weather data
-- **Interactive Chat**: Natural language interface for weather queries
-- **Multiple Data Sources**: Current weather and 5-day forecasts
-- **Flexible Units**: Support for metric, imperial, and Kelvin units
+- **MCP Weather Server**: Tools for current conditions and 5‑day forecast via MCP.
+- **LLM Analysis Pipeline**: OpenAI → Hugging Face Inference API → local Ollama → rule‑based fallback for varied, concise advice.
+- **Interactive Looping CLI**: Prompted location entry and choice between current vs 5‑day forecast; keeps running until you type `quit`.
+- **Accurate 5‑Day Grouping**: Forecast groups entries per day (prefers noon) to ensure five distinct days.
+- **Flexible Units**: Metric, imperial, and Kelvin.
 
 ## 🏗️ Architecture
 
@@ -52,13 +52,20 @@ copy .env.example .env
 Edit `.env` and add your OpenWeatherMap API key:
 ```
 OPENWEATHER_API_KEY=your_actual_api_key_here
+
+# Optional: LLM analysis keys
+# OPENAI_API_KEY=sk-...
+# HF_API_TOKEN=hf_...
+# OLLAMA_HOST=http://localhost:11434
 ```
 
 ### 4. Run the Weather Assistant
 
 ```bash
-python llm_weather_client.py
+python run.py
 ```
+
+You’ll be prompted for a location and whether you want current weather or the 5‑day forecast. The app will keep prompting until you type `quit`.
 
 ## 🔧 Components
 
@@ -84,10 +91,10 @@ The MCP server provides two main tools:
 
 The client demonstrates how to:
 
-- Connect to an MCP server
-- Call MCP tools programmatically  
-- Analyze weather data with LLM-like intelligence
-- Provide an interactive chat interface
+- Connect to the local MCP server via stdio
+- Call MCP tools programmatically
+- Analyze weather data with a layered LLM pipeline (OpenAI / HF Inference / Ollama / rule‑based)
+- Provide an interactive, looping CLI UX (implemented in `run.py`)
 
 ### Configuration (`config.py`)
 
@@ -95,11 +102,13 @@ Centralized configuration management with environment variable support.
 
 ## 💬 Usage Examples
 
-### Interactive Chat
+### Interactive CLI
 
 ```
-You: What's the weather like in London?
-🔍 Getting weather for London...
+Enter location (e.g., 'London, UK'):
+What would you like to see?
+  1) Current weather
+  2) 5-day forecast
 
 Weather Assistant:
 Current Weather for London, GB:
@@ -116,8 +125,8 @@ Current Weather for London, GB:
 ### Forecast Queries
 
 ```
-You: What's the forecast for Tokyo this week?
-🔍 Getting forecast for Tokyo...
+Enter location: Tokyo, JP
+Choose: 2 (5-day forecast)
 
 Weather Assistant:
 5-Day Weather Forecast for Tokyo, JP:
